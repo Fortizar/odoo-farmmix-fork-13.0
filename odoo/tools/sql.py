@@ -52,8 +52,9 @@ def table_kind(cr, tablename):
 def create_model_table(cr, tablename, comment=None):
     """ Create the table for a model. """
     cr.execute('CREATE TABLE "{}" (id SERIAL NOT NULL, PRIMARY KEY(id))'.format(tablename))
-    site_id = os.getenv('DB_SYNC_SITE_ID')
-    if not site_id or not isinstance(site_id, int):
+    site_id_dirty = os.getenv('DB_SYNC_SITE_ID', '')
+    site_id = int(site_id_dirty) if site_id_dirty.isdigit() else 0
+    if site_id < 1:
         raise Exception(f'Unable to create table [{tablename}] because DB_SYNC_SITE_ID envvar is not an int. DB_SYNC_SITE_ID: [{site_id}]')
     increment = 100
     restart_with = increment + site_id
